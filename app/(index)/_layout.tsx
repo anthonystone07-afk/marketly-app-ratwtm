@@ -1,9 +1,10 @@
 import React from "react";
 import { useNetworkState } from "expo-network";
-import { Redirect, router, Stack } from "expo-router";
+import { Tabs } from "expo-router";
 import { Alert } from "react-native";
-import { Button } from "@/components/button";
 import { WidgetProvider } from "@/contexts/WidgetContext";
+import { IconSymbol } from "@/components/IconSymbol";
+import { colors } from "@/styles/commonStyles";
 
 export const unstable_settings = {
   initialRouteName: "index",
@@ -24,31 +25,66 @@ export default function AppIndexLayout() {
     }
   }, [networkState.isConnected, networkState.isInternetReachable]);
 
-//   if (!user) {
-//     return <Redirect href="/(auth)" />;
-//   }
-
   return (
-        <WidgetProvider>
-            <Stack
-              screenOptions={{
-                ...(process.env.EXPO_OS !== "ios"
-                  ? {}
-                  : {
-                      headerLargeTitle: true,
-                      headerTransparent: true,
-                      headerBlurEffect: "systemChromeMaterial",
-                      headerLargeTitleShadowVisible: false,
-                      headerShadowVisible: true,
-                      headerLargeStyle: {
-                        // NEW: Make the large title transparent to match the background.
-                        backgroundColor: "transparent",
-                      },
-                    }),
-              }}
-            >
-              {/* Modal Demo Screens - These are configured in their individual screen files */}
-            </Stack>
-        </WidgetProvider>
+    <WidgetProvider>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textSecondary,
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+            borderTopWidth: 1,
+          },
+          headerShown: false,
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Dashboard',
+            tabBarIcon: ({ color, size }) => (
+              <IconSymbol name="house" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="clients-tab"
+          options={{
+            title: 'Clients',
+            tabBarIcon: ({ color, size }) => (
+              <IconSymbol name="person.2" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="campaigns-tab"
+          options={{
+            title: 'Campaigns',
+            tabBarIcon: ({ color, size }) => (
+              <IconSymbol name="megaphone" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="analytics-tab"
+          options={{
+            title: 'Analytics',
+            tabBarIcon: ({ color, size }) => (
+              <IconSymbol name="chart.bar" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="reports-tab"
+          options={{
+            title: 'Reports',
+            tabBarIcon: ({ color, size }) => (
+              <IconSymbol name="doc.text" color={color} size={size} />
+            ),
+          }}
+        />
+      </Tabs>
+    </WidgetProvider>
   );
 }

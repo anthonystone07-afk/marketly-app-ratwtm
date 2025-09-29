@@ -1,87 +1,45 @@
 import React from "react";
 import { Stack, router } from "expo-router";
-import { FlatList, Pressable, StyleSheet, View, Text } from "react-native";
-// Components
-import { IconCircle } from "@/components/IconCircle";
+import { ScrollView, Pressable, StyleSheet, View, Text } from "react-native";
 import { IconSymbol } from "@/components/IconSymbol";
-import { BodyScrollView } from "@/components/BodyScrollView";
-import { Button } from "@/components/button";
-// Constants & Hooks
-import { backgroundColors } from "@/constants/Colors";
+import { commonStyles, colors } from "@/styles/commonStyles";
 
-const ICON_COLOR = "#007AFF";
-
-export default function HomeScreen() {
-
-  const modalDemos = [
-    {
-      title: "Standard Modal",
-      description: "Full screen modal presentation",
-      route: "/modal",
-      color: "#007AFF",
-    },
-    {
-      title: "Form Sheet",
-      description: "Bottom sheet with detents and grabber",
-      route: "/formsheet",
-      color: "#34C759",
-    },
-    {
-      title: "Transparent Modal",
-      description: "Overlay without obscuring background",
-      route: "/transparent-modal",
-      color: "#FF9500",
-    }
-  ];
-
-  const renderModalDemo = ({ item }: { item: typeof modalDemos[0] }) => (
-    <View style={styles.demoCard}>
-      <View style={[styles.demoIcon, { backgroundColor: item.color }]}>
-        <IconSymbol name="square.grid.3x3" color="white" size={24} />
-      </View>
-      <View style={styles.demoContent}>
-        <Text style={styles.demoTitle}>{item.title}</Text>
-        <Text style={styles.demoDescription}>{item.description}</Text>
-      </View>
-      <Button
-        variant="outline"
-        size="sm"
-        onPress={() => router.push(item.route as any)}
-      >
-        Try It
-      </Button>
-    </View>
-  );
-
-  const renderEmptyList = () => (
-    <BodyScrollView contentContainerStyle={styles.emptyStateContainer}>
-      <IconCircle
-        emoji=""
-        backgroundColor={
-          backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
-        }
-      />
-    </BodyScrollView>
-  );
+export default function DashboardScreen() {
+  console.log("Dashboard screen loaded");
 
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => {console.log("plus")}}
-      style={styles.headerButtonContainer}
+      onPress={() => {
+        console.log("Settings pressed");
+        router.push("/settings");
+      }}
+      style={styles.headerButton}
     >
-      <IconSymbol name="plus" color={ICON_COLOR} />
+      <IconSymbol name="gear" color={colors.text} size={24} />
     </Pressable>
   );
 
-  const renderHeaderLeft = () => (
+  const quickActions = [
+    { title: "Clients", icon: "person.2", route: "/(index)/clients-tab", color: colors.primary },
+    { title: "Campaigns", icon: "megaphone", route: "/(index)/campaigns-tab", color: colors.secondary },
+    { title: "Analytics", icon: "chart.bar", route: "/(index)/analytics-tab", color: colors.warning },
+    { title: "Reports", icon: "doc.text", route: "/(index)/reports-tab", color: colors.accent },
+  ];
+
+  const renderQuickAction = (action: typeof quickActions[0], index: number) => (
     <Pressable
-      onPress={() => {console.log("gear")}}
-      style={styles.headerButtonContainer}
+      key={index}
+      style={[styles.quickActionCard, { borderLeftColor: action.color }]}
+      onPress={() => {
+        console.log(`Navigating to ${action.route}`);
+        router.push(action.route as any);
+      }}
     >
-      <IconSymbol
-        name="gear"
-        color={ICON_COLOR}
-      />
+      <View style={[styles.quickActionIcon, { backgroundColor: action.color }]}>
+        <IconSymbol name={action.icon as any} color="white" size={20} />
+      </View>
+      <Text style={styles.quickActionTitle}>{action.title}</Text>
+      <IconSymbol name="chevron.right" color={colors.textSecondary} size={16} />
     </Pressable>
   );
 
@@ -89,93 +47,142 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
-          title: "Building the app...",
+          title: "Dashboard",
           headerRight: renderHeaderRight,
-          headerLeft: renderHeaderLeft,
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTitleStyle: {
+            color: colors.text,
+            fontWeight: '600',
+          },
         }}
       />
-      <View style={styles.container}>
-        <FlatList
-          data={modalDemos}
-          renderItem={renderModalDemo}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={styles.listContainer}
-          contentInsetAdjustmentBehavior="automatic"
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      <ScrollView style={commonStyles.container} showsVerticalScrollIndicator={false}>
+        <View style={commonStyles.content}>
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <Text style={commonStyles.title}>Welcome Back!</Text>
+            <Text style={commonStyles.subtitle}>Here&apos;s your business overview</Text>
+          </View>
+
+          {/* Key Metrics */}
+          <View style={commonStyles.section}>
+            <Text style={commonStyles.sectionTitle}>Key Metrics</Text>
+            <View style={commonStyles.card}>
+              <View style={commonStyles.row}>
+                <View style={commonStyles.metric}>
+                  <Text style={[commonStyles.metricValue, { color: colors.primary }]}>24</Text>
+                  <Text style={commonStyles.metricLabel}>Active Clients</Text>
+                </View>
+                <View style={styles.metricDivider} />
+                <View style={commonStyles.metric}>
+                  <Text style={[commonStyles.metricValue, { color: colors.secondary }]}>12</Text>
+                  <Text style={commonStyles.metricLabel}>Running Campaigns</Text>
+                </View>
+                <View style={styles.metricDivider} />
+                <View style={commonStyles.metric}>
+                  <Text style={[commonStyles.metricValue, { color: colors.warning }]}>89%</Text>
+                  <Text style={commonStyles.metricLabel}>Success Rate</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Recent Activity */}
+          <View style={commonStyles.section}>
+            <Text style={commonStyles.sectionTitle}>Recent Activity</Text>
+            <View style={commonStyles.card}>
+              <View style={styles.activityItem}>
+                <View style={[styles.activityDot, { backgroundColor: colors.success }]} />
+                <View style={styles.activityContent}>
+                  <Text style={commonStyles.text}>New client onboarded</Text>
+                  <Text style={commonStyles.textSecondary}>TechCorp - 2 hours ago</Text>
+                </View>
+              </View>
+              <View style={styles.activityItem}>
+                <View style={[styles.activityDot, { backgroundColor: colors.primary }]} />
+                <View style={styles.activityContent}>
+                  <Text style={commonStyles.text}>Campaign performance updated</Text>
+                  <Text style={commonStyles.textSecondary}>Social Media Boost - 4 hours ago</Text>
+                </View>
+              </View>
+              <View style={styles.activityItem}>
+                <View style={[styles.activityDot, { backgroundColor: colors.warning }]} />
+                <View style={styles.activityContent}>
+                  <Text style={commonStyles.text}>Monthly report generated</Text>
+                  <Text style={commonStyles.textSecondary}>December Analytics - 1 day ago</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Quick Actions */}
+          <View style={commonStyles.section}>
+            <Text style={commonStyles.sectionTitle}>Quick Actions</Text>
+            {quickActions.map(renderQuickAction)}
+          </View>
+        </View>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  headerButton: {
+    padding: 8,
+  },
+  welcomeSection: {
+    paddingTop: 20,
+    paddingBottom: 8,
+    alignItems: 'center',
+  },
+  metricDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: colors.border,
+    marginHorizontal: 16,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  activityDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 6,
+    marginRight: 12,
+  },
+  activityContent: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
-  headerSection: {
-    padding: 20,
-    paddingBottom: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 22,
-  },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  demoCard: {
-    backgroundColor: 'white',
+  quickActionCard: {
+    backgroundColor: colors.card,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    borderLeftWidth: 4,
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
     elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  demoIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  quickActionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
   },
-  demoContent: {
+  quickActionTitle: {
     flex: 1,
-  },
-  demoTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  demoDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 18,
-  },
-  emptyStateContainer: {
-    alignItems: "center",
-    gap: 8,
-    paddingTop: 100,
-  },
-  headerButtonContainer: {
-    padding: 6, // Just enough padding around the 24px icon
+    fontSize: 16,
+    fontWeight: '500',
+    color: colors.text,
   },
 });
